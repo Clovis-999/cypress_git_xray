@@ -1,0 +1,66 @@
+image: harbor.mlsdevcloud.com/mip/docker-compose-jdk-gcc:0.1.94
+
+variables:
+  DOCKER_DRIVER: overlay
+  DOCKER_HOST: tcp://localhost:2375
+  DOCKER_REGISTRY: harbor.mlsdevcloud.com/mip
+  npm_config_cache: '$CI_PROJECT_DIR/.npm'
+  CYPRESS_CACHE_FOLDER: '$CI_PROJECT_DIR/cache/Cypress'
+  KUBERNETES_MEMORY_LIMIT: 4Gi
+  KUBERNETES_MEMORY_REQUEST: 4Gi
+# first, install Cypress, then run all tests (in parallel)
+stages:
+  - build
+  - test
+  - post-compliance
+
+# cache using branch name
+# https://gitlab.com/help/ci/caching/index.md
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .npm
+    - cache/Cypress
+    - node_modules
+# this job installs NPM dependencies and Cypress
+install:
+  image: cypress/base:14.16.0
+  stage: build
+  tags:
+    - infrastructure
+  script:
+    - npm install --unsafe-perm
+    # show where the Cypress test runner binaries are cached
+    - $(npm bin)/cypress cache path
+    # show all installed versions of Cypress binary
+    - $(npm bin)/cypress cache list
+    - $(npm bin)/cypress verify
+  artifacts:
+    paths:
+      - node_modules/
+      - version
+      - cache/Cypress
+
+# two jobs that run after "install" job finishes
+# NPM dependencies and Cypress binary should be already installed
+cypress-e2e-chrome:
+  image: cypress/browsers:node14.17.0-chrome91-ff89
+  stage: test
+  tags:
+    - infrastructure
+  script:
+    - npm run cy:runAll
+  artifacts:
+    expire_in: 1 day
+    when: always
+    paths:
+      - cypress/videos
+      - cypress/screenshots
+      - cypress/results
+    reports:
+      junit: cypress/results/results-*.xml
+  retry:
+    max: 1
+    when:
+      - script_failure
+# tip: lint this file using https://gitlab.com/ci/lint

@@ -1,0 +1,18 @@
+{
+  "baseUrl": "https://www.saucedemo.com/",
+  "defaultCommandTimeout": 4000,
+  "pageLoadTimeout": 4000,
+  "requestTimeout": 4000,
+  "chromeWebSecurity": false,
+  "video": true,
+  "screenshotsFolder": "cypress/screenshots",
+  "videosFolder": "cypress/videos",
+  "trashAssetsBeforeRuns": true,
+  "viewportWidth": 1920,
+  "viewportHeight": 1080,
+  "reporter": "junit",
+  "reporterOptions": {
+    "mochaFile": "results/test-results-[hash].xml",
+    "testCaseSwitchClassnameAndName": false
+  }
+}

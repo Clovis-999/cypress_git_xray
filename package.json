@@ -1,0 +1,28 @@
+{
+  "name": "cypress_uat_xray",
+  "version": "1.0.0",
+  "description": "automation using cypress",
+  "main": "index.js",
+  "author": "clovis999",
+  "license": "ISC",
+  "scripts": {
+    "cypress:prereport": "npm run delete:reports",
+    "delete:reports": "rm cypress/results/* || true",
+    "cy:open": "cypress open",
+    "cy:runAll": "cypress run --reporter junit --spec 'cypress/integration/**.js'"
+  },
+  "dependencies": {
+    "crypto-js": "^4.1.1"
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "cypress": "^9.7.0",
+    "cypress-multi-reporters": "^1.6.0",
+    "eslint": "^7.15.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.26.0",
+    "mocha": "^8.2.1",
+    "mocha-junit-reporter": "^2.0.2",
+    "mochawesome-merge": "^4.2.1"
+  }
+}
